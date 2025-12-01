@@ -1,4 +1,3 @@
-
 /*-------------------------------------------------
  =  Table of Css
 
@@ -81,6 +80,15 @@ website:    http://www.themepunch.com
 /*-------------------------------------------------*/
 /* =  Header
 /*-------------------------------------------------*/
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 .navbar-default {
   background: #ffffff;
   border: none;
@@ -239,34 +247,7 @@ website:    http://www.themepunch.com
   opacity: 1;
   visibility: visible;
 }
-header.active .navbar-default {
-  box-shadow: 0 0 2px #dddddd;
-  -webkit-box-shadow: 0 0 2px #dddddd;
-  -moz-box-shadow: 0 0 2px #dddddd;
-  -o-box-shadow: 0 0 2px #dddddd;
-}
-header.active .top-line {
-  height: 0;
-  padding: 0;
-}
-header.active .navbar-brand {
-  color: #222222 !important;
-  padding: 18px 15px;
-}
-header.active .navbar-nav > li > a {
-  color: #222222 !important;
-  padding: 25px 15px;
-}
-header.active .navbar-nav a.open-search {
-  padding: 25px 15px;
-}
-header.active .navbar-nav a.open-search i {
-  color: #666666;
-}
-header.active .navbar-nav > li > a:hover,
-header.active .navbar-nav > li > a.active {
-  color: #ffba00 !important;
-}
+
 .form-search {
   position: absolute;
   top: 100%;
@@ -347,6 +328,7 @@ p {
   -webkit-box-shadow: 0 0 16px #aaa;
   -moz-box-shadow: 0 0 16px #aaa;
   -o-box-shadow: 0 0 16px #aaa;
+  padding-top: 150px;
 }
 /*-------------------------------------------------*/
 /* =  content
@@ -355,7 +337,8 @@ p {
   margin-bottom: 30px;
   text-align: center;
 }
-.title-section h1 {
+.title-section h1,
+.title-section h2 {
   color: #222222;
   font-size: 30px;
   font-family: 'Montserrat', sans-serif;
@@ -363,9 +346,28 @@ p {
   margin: 0 0 30px;
   text-transform: uppercase;
 }
-.title-section h1 span {
+.title-section h1 span,
+.title-section h2 span {
   color: #ffba00;
 }
+
+#new-section .new-section-content {
+	max-width: 1600px;
+	margin: 0 auto;
+}
+
+#new-section .new-section-content p, 
+#new-section .new-section-content li {
+	font-family: 'Lato', sans-serif;
+	font-size: 20px;
+	text-align: left;
+}
+
+#new-section .new-section-content ul {
+	list-style-type: disc;
+	padding-left: 20px;
+}
+
 #home-section .tp-caption.small_text {
   position: absolute;
   color: #fff;
@@ -2417,6 +2419,9 @@ footer p.copyright {
   }
 }
 @media (max-width: 767px) {
+  #container {
+    padding-top: 80px;
+  }
   .top-line {
     display: none;
   }

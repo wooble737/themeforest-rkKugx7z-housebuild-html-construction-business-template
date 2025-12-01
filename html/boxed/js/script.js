@@ -357,3 +357,10 @@ try {
 			}
 		});
 	});
+
+function downloadPDF() {
+    const link = document.createElement('a');
+    link.href = 'upload/projects/Eмаль MAGNUM PUR 790.pdf';
+    link.download = 'project.pdf';
+    link.click();
+}
