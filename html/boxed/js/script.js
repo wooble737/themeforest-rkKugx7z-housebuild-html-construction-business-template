@@ -479,3 +479,39 @@ function downloadSpetsgruntMagnum007() {
 function downloadFarbaAkrilatnaKvant125() {
 	downloadPDF('фарба акрилатна KVANT-125');
 }
+
+function downloadRozchynnykDlyaEpoksydivMagnum1() {
+	downloadPDF('Розчинник для епоксидів MAGNUM- 1');
+}
+
+function downloadRozchynnyMagnum2() {
+	downloadPDF('Розчинник MAGNUM-2');
+}
+
+function downloadRozchynnyMagnum3() {
+	downloadPDF('Розчинник MAGNUM- 3');
+}
+
+function downloadRozchynnyMagnum4() {
+	downloadPDF('Розчинник MAGNUM-4');
+}
+
+function downloadEmalMagnumTERMO600() {
+	downloadPDF('Эмаль MAGNUM TERMO 600');
+}
+
+function downloadGruntMagnum740G35() {
+	downloadPDF('Грунт-емаль 2К MAGNUM 740 G35');
+}
+
+function downloadGruntMagnum740G70() {
+	downloadPDF('Грунт-емаль 2К MAGNUM 740 G70');
+}
+
+function downloadKvant130() {
+	downloadPDF('Лак  KVANT-130 FD');
+}
+
+function downloadGruntEmalMagnum150Zn() {
+	downloadPDF('Грунт-емаль MAGNUM 150Zn');
+}
