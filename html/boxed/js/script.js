@@ -276,32 +276,28 @@ $(document).ready(function($) {
 		
 	})();
 
-	
 	/* ---------------------------------------------------------------------- */
-	/*	Contact Map 2
+	/*	Image Zoom (Bootstrap modal)
 	/* ---------------------------------------------------------------------- */
-	var contact = {"lat":"-33.880641", "lon":"151.204298"}; //Change a map coordinate here!
+	$(document).on('click', 'img.zoomable', function(e) {
+		// Prevent any parent link navigation
+		e.preventDefault();
+		e.stopPropagation();
 
-	try {
-		var mapContainer = $('#map2');
-		mapContainer.gmap3({
-			action: 'addMarker',
-			marker:{
-				options:{
-					icon : new google.maps.MarkerImage('images/marker.png')
-				}
-			},
-			latLng: [contact.lat, contact.lon],
-			map:{
-				center: [contact.lat, contact.lon],
-				zoom: 16
-				},
-			},
-			{action: 'setOptions', args:[{scrollwheel:false}]}
-		);
-	} catch(err) {
+		var $img = $(this);
+		var fullSrc = $img.attr('data-full') || $img.attr('src') || '';
+		var altText = $img.attr('alt') || '';
 
-	}
+		if (!fullSrc) return;
+
+		$('#imageModalImg').attr('src', fullSrc).attr('alt', altText);
+		$('#imageModal').modal('show');
+	});
+
+	$('#imageModal').on('hidden.bs.modal', function () {
+		// Clear to free memory and avoid flashing previous image
+		$('#imageModalImg').attr('src', '').attr('alt', '');
+	});
 
 });
 
@@ -309,7 +305,7 @@ $(document).ready(function($) {
 /*	map street view mode function
 /* ---------------------------------------------------------------------- */
 function initialize() {
-	var bryantPark = new google.maps.LatLng(35.639543,-77.371199); //Change a map street view cordinate here! {"lat":"-33.880641", "lon":"151.204298"}
+	var bryantPark = new google.maps.LatLng(49.999631, 36.185510); //Change a map street view cordinate here!
 	var panoramaOptions = {
 		position: bryantPark,
 		pov: {
@@ -358,9 +354,128 @@ try {
 		});
 	});
 
-function downloadPDF() {
-    const link = document.createElement('a');
-    link.href = 'upload/projects/Eмаль MAGNUM PUR 790.pdf';
-    link.download = 'project.pdf';
+function downloadPDF(fileName) {
+    if (!fileName) return;
+    // encode filename for URL safety (spaces, non-latin chars)
+    var safeFile = encodeURIComponent(fileName) + '.pdf';
+    var url = 'upload/projects/' + safeFile;
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = fileName + '.pdf';
+    link.target = '_blank';
+    // append to DOM so click works in all browsers
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+}
+
+function downloadMagnumPur790() {
+    downloadPDF('Eмаль MAGNUM PUR 790');
+}
+
+function downloadGruntMagnum015() {
+    downloadPDF('Грунт MAGNUM 015');
+}
+
+function downloadGruntMagnum015T() {
+    downloadPDF('Грунт MAGNUM 015T');
+}
+
+function downloadGruntMagnum120WT() {
+    downloadPDF('Грунт MAGNUM 120WT');
+}
+function downloadGruntMagnumEp022() {
+    downloadPDF('Грунт MAGNUM EP 022');
+}
+
+function downloadGruntMagnumEp022HS() {
+    downloadPDF('Грунт MAGNUM EP 022HS');
+}
+
+function downloadGruntMagnumEp052() {
+    downloadPDF('Грунт MAGNUM EP 052');
+}
+
+function downloadGruntMagnum010() {
+	downloadPDF('Грунт воднодисперсійний MAGNUM 010');
+}
+
+function downloadGruntMagnum011() {
+	downloadPDF('Грунт воднодисперсійний MAGNUM 011');
+}
+
+function downloadGruntMagnumPur031() {
+    downloadPDF('Грунт поліуретановий MAGNUM PUR 031');
+}
+
+function downloadGruntEmalMagnum740G35() {
+	downloadPDF('Грунт-емаль 2К MAGNUM 740 G35');
+}
+
+function downloadGruntEmalMagnum740G70() {
+	downloadPDF('Грунт-емаль 2К MAGNUM 740 G70');
+}
+
+function downloadGruntEmalMagnum120() {
+    downloadPDF('Грунт-емаль MAGNUM 120');
+}
+
+function downloadGruntEmalMagnum120W() {
+    downloadPDF('Грунт-емаль MAGNUM 120W');
+}
+
+function downloadGruntEmalMagnum120WT() {
+	downloadPDF('Грунт-емаль MAGNUM 120WT');
+}
+
+function downloadGruntEmalMagnumEp770() {
+    downloadPDF('Грунт-емаль MAGNUM EP 770');
+}
+
+function downloadGruntKvant035() {
+	downloadPDF('Грунтовка укривна KVANT-035');
+}
+
+function downloadEmalMagnumPUR790() {
+	downloadPDF('Емаль MAGNUM PUR 790');
+}
+
+function downloadEmalMagnumPur790T() {
+    downloadPDF('Емаль MAGNUM  PUR 790T');
+}
+
+function downloadEmalMagnum140() {
+    downloadPDF('Емаль MAGNUM 140');
+}
+
+function downloadEmalMagnum140W() {
+    downloadPDF('Емаль MAGNUM 140W');
+}
+
+function downloadEmalMagnum760() {
+	downloadPDF('Емаль MAGNUM 760');
+}
+
+function downloadEmalMagnumMl12() {
+    downloadPDF('Емаль MAGNUM ML-12');
+}
+
+function downloadLakVodnodispersiyniyMagnum111() {
+    downloadPDF('Лак воднодисперсійний MAGNUM 111');
+}
+
+function downloadGruntEmalMagnum120W() {
+    downloadPDF('грунт-емаль MAGNUM 120W');
+}
+
+function downloadGruntEmalMagnum120WT() {
+    downloadPDF('грунт-емаль MAGNUM 120WT');
+}
+
+function downloadSpetsgruntMagnum007() {
+    downloadPDF('спецгрунт MAGNUM 007');
+}
+
+function downloadFarbaAkrilatnaKvant125() {
+	downloadPDF('фарба акрилатна KVANT-125');
 }

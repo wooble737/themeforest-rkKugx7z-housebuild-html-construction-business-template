@@ -68,7 +68,7 @@
 							</li>
 							<li class="drop"><a href="about.html">Об'єкти</a>
 							</li>
-							<li class="drop"><a href="contact2.html">Контакти</a>
+							<li class="drop"><a class="active" href="contact2.html">Контакти</a>
 							</li>
 							<li class="search drop"><a href="#" class="open-search"><i class="fa fa-search"></i></a>
 								<form class="form-search">
@@ -165,6 +165,26 @@
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
 	<script type="text/javascript" src="js/gmap3.min.js"></script>
 	<script type="text/javascript" src="js/script.js"></script>
+
+    <script type="text/javascript">
+        $('#map2').gmap3({
+         map:{
+            options:{
+             zoom:15,
+             scrollwheel: false
+            }
+         },
+         marker:{
+            address: "61051, Харків, вулиця Велика Панасівська, 183",
+            options:{
+             icon: new google.maps.MarkerImage(
+               "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+               new google.maps.Size(32, 32, "px", "px")
+             )
+            }
+         }
+        });
+    </script>
 	
 </body>
 </html>

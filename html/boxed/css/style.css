@@ -1876,6 +1876,38 @@ a.button-one {
   font-weight: 700;
   margin-right: 10px;
 }
+
+/* single-project page: narrower centered content and centered PDF button */
+.single-project-section .container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 50px 0px;
+}
+.single-project-section .project-content-box {
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* specific rule for the PDF download area (keeps other .project-content-box uses unchanged) */
+.project-content-box.pdf-download {
+  text-align: center;
+  padding-bottom: 40px;
+}
+.project-content-box.pdf-download .btn {
+  display: inline-block;
+  margin: 0 auto;
+  min-width: 220px;
+}
+/* small responsive tweak */
+@media (max-width: 767px) {
+  .single-project-section .container {
+    padding: 20px 12px;
+  }
+  .project-content-box.pdf-download .btn {
+    width: 100%;
+    max-width: 320px;
+  }
+}
 /*-------------------------------------------------*/
 /* =  tables page
 /*-------------------------------------------------*/
@@ -2230,7 +2262,7 @@ footer .up-footer ul.tag-list li a {
   color: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.8);
   font-size: 12px;
-  font-family: 'Lato', sans-serif;
+   font-family: 'Lato', sans-serif;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -o-border-radius: 3px;
