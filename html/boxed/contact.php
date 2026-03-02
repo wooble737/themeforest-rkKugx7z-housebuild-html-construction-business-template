@@ -1,97 +1,154 @@
-<?php 
-	header('Content-Type: application/json; charset=utf-8');
+<?php
+header('Content-Type: application/json; charset=utf-8');
 
-	/* ==========================  Define variables ========================== */
+define('__TO__', 'besimdauti24@gmail.com');
+define('__SUBJECT__', 'examples.com = From:');
+define('__SUCCESS_MESSAGE__', 'Your message has been sent. Thank you!');
+define('__ERROR_MESSAGE__', "Error, your message hasn't been sent");
+define('__MESSAGE_EMPTY_FILDS__', 'Please fill out all fields');
 
-	#Your e-mail address
-	define("__TO__", "besimdauti24@gmail.com");
+$phpMailerPath = __DIR__ . '/phpmailer/src';
+if (
+    file_exists($phpMailerPath . '/PHPMailer.php') &&
+    file_exists($phpMailerPath . '/SMTP.php') &&
+    file_exists($phpMailerPath . '/Exception.php')
+) {
+    require_once $phpMailerPath . '/PHPMailer.php';
+    require_once $phpMailerPath . '/SMTP.php';
+    require_once $phpMailerPath . '/Exception.php';
+}
 
-	#Message subject
-	define("__SUBJECT__", "examples.com = From:");
+function json_response($info, $msg)
+{
+    echo json_encode(array('info' => $info, 'msg' => $msg));
+    exit();
+}
 
-	#Success message
-	define('__SUCCESS_MESSAGE__', "Your message has been sent. Thank you!");
+function check_email($email)
+{
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
 
-	#Error message 
-	define('__ERROR_MESSAGE__', "Error, your message hasn't been sent");
+function get_smtp_config()
+{
+    return array(
+        'host' => getenv('SMTP_HOST') ?: '',
+        'port' => (int)(getenv('SMTP_PORT') ?: 587),
+        'username' => getenv('SMTP_USERNAME') ?: '',
+        'password' => getenv('SMTP_PASSWORD') ?: '',
+        'encryption' => getenv('SMTP_ENCRYPTION') ?: 'tls',
+        'from_email' => getenv('SMTP_FROM_EMAIL') ?: (getenv('SMTP_USERNAME') ?: __TO__),
+        'from_name' => getenv('SMTP_FROM_NAME') ?: 'Website Contact Form'
+    );
+}
 
-	#Messege when one or more fields are empty
-	define('__MESSAGE_EMPTY_FILDS__', "Please fill out  all fields");
+function send_mail($to, $subject, $message, $replyEmail, $replyName)
+{
+    $safeReplyName = str_replace(array("\r", "\n"), '', $replyName);
+    $safeReplyEmail = str_replace(array("\r", "\n"), '', $replyEmail);
 
-	/* ========================  End Define variables ======================== */
+    $smtp = get_smtp_config();
+    $usePhpMailer = class_exists('PHPMailer\\PHPMailer\\PHPMailer') && $smtp['host'] !== '';
 
-	//Send mail function
-	function send_mail($to,$subject,$message,$headers){
-		if(mail($to,$subject,$message,$headers)){
-			echo json_encode(array('info' => 'success', 'msg' => __SUCCESS_MESSAGE__));
-		} else {
-			echo json_encode(array('info' => 'error', 'msg' => __ERROR_MESSAGE__));
-		}
-	}
+    if ($usePhpMailer) {
+        try {
+            $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+            $mail->isSMTP();
+            $mail->Host = $smtp['host'];
+            $mail->Port = $smtp['port'];
+            $mail->SMTPAuth = $smtp['username'] !== '';
+            $mail->Username = $smtp['username'];
+            $mail->Password = $smtp['password'];
 
-	//Check e-mail validation
-	function check_email($email){
-		return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
-	}
+            if ($smtp['encryption'] === 'ssl') {
+                $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+            } else {
+                $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+            }
 
-	//Get post data
-	if(isset($_POST['name']) and isset($_POST['mail']) and isset($_POST['comment'])){
-		$name 	 = trim($_POST['name']);
-		$mail 	 = trim($_POST['mail']);
-		$website  = isset($_POST['website']) ? trim($_POST['website']) : '';
-		$comment = trim($_POST['comment']);
+            $mail->CharSet = 'UTF-8';
+            $mail->setFrom($smtp['from_email'], $smtp['from_name']);
+            $mail->addAddress($to);
+            $mail->addReplyTo($safeReplyEmail, $safeReplyName);
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body = $message;
 
-		if($name == '') {
-			echo json_encode(array('info' => 'error', 'msg' => "Please enter your name."));
-			exit();
-		} else if($mail == '' or check_email($mail) == false){
-			echo json_encode(array('info' => 'error', 'msg' => "Please enter valid e-mail."));
-			exit();
-		} else if($comment == ''){
-			echo json_encode(array('info' => 'error', 'msg' => "Please enter your message."));
-			exit();
-		} else {
-			//Send Mail
-			$to = __TO__;
-			$safeName = str_replace(array("\r", "\n"), '', $name);
-			$safeMail = str_replace(array("\r", "\n"), '', $mail);
-			$subject = __SUBJECT__ . ' ' . $safeName;
-			$message = '
-			<html>
-			<head>
-			  <meta charset="utf-8">
-			  <title>Mail from '. $name .'</title>
-			</head>
-			<body>
-			  <table style="width: 500px; font-family: arial; font-size: 14px;" border="1">
-				<tr style="height: 32px;">
-				  <th align="right" style="width:150px; padding-right:5px;">Name:</th>
-				  <td align="left" style="padding-left:5px; line-height: 20px;">'. $name .'</td>
-				</tr>
-				<tr style="height: 32px;">
-				  <th align="right" style="width:150px; padding-right:5px;">E-mail:</th>
-				  <td align="left" style="padding-left:5px; line-height: 20px;">'. $mail .'</td>
-				</tr>
-				<tr style="height: 32px;">
-				  <th align="right" style="width:150px; padding-right:5px;">Website:</th>
-				  <td align="left" style="padding-left:5px; line-height: 20px;">'. $website .'</td>
-				</tr>
-				<tr style="height: 32px;">
-				  <th align="right" style="width:150px; padding-right:5px;">Comment:</th>
-				  <td align="left" style="padding-left:5px; line-height: 20px;">'. $comment .'</td>
-				</tr>
-			  </table>
-			</body>
-			</html>
-			';
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 
-			$headers  = 'MIME-Version: 1.0' . "\r\n";
-			$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-			$headers .= 'From: ' . $safeMail . "\r\n";
+    $headers = 'MIME-Version: 1.0' . "\r\n";
+    $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+    $headers .= 'From: ' . $safeReplyEmail . "\r\n";
+    $headers .= 'Reply-To: ' . $safeReplyEmail . "\r\n";
 
-			send_mail($to,$subject,$message,$headers);
-		}
-	} else {
-		echo json_encode(array('info' => 'error', 'msg' => __MESSAGE_EMPTY_FILDS__));
-	}
- ?>
+    return @mail($to, $subject, $message, $headers);
+}
+
+if (!isset($_POST['name']) || !isset($_POST['mail']) || !isset($_POST['comment'])) {
+    json_response('error', __MESSAGE_EMPTY_FILDS__);
+}
+
+$name = trim($_POST['name']);
+$mail = trim($_POST['mail']);
+$website = isset($_POST['website']) ? trim($_POST['website']) : '';
+$comment = trim($_POST['comment']);
+
+if ($name === '') {
+    json_response('error', 'Please enter your name.');
+}
+
+if ($mail === '' || !check_email($mail)) {
+    json_response('error', 'Please enter valid e-mail.');
+}
+
+if ($comment === '') {
+    json_response('error', 'Please enter your message.');
+}
+
+$to = getenv('CONTACT_TO_EMAIL') ?: __TO__;
+$safeName = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+$safeMail = htmlspecialchars($mail, ENT_QUOTES, 'UTF-8');
+$safeWebsite = htmlspecialchars($website, ENT_QUOTES, 'UTF-8');
+$safeComment = nl2br(htmlspecialchars($comment, ENT_QUOTES, 'UTF-8'));
+
+$subject = __SUBJECT__ . ' ' . str_replace(array("\r", "\n"), '', $name);
+$message = '
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mail from ' . $safeName . '</title>
+</head>
+<body>
+  <table style="width: 500px; font-family: arial; font-size: 14px;" border="1">
+    <tr style="height: 32px;">
+      <th align="right" style="width:150px; padding-right:5px;">Name:</th>
+      <td align="left" style="padding-left:5px; line-height: 20px;">' . $safeName . '</td>
+    </tr>
+    <tr style="height: 32px;">
+      <th align="right" style="width:150px; padding-right:5px;">E-mail:</th>
+      <td align="left" style="padding-left:5px; line-height: 20px;">' . $safeMail . '</td>
+    </tr>
+    <tr style="height: 32px;">
+      <th align="right" style="width:150px; padding-right:5px;">Website:</th>
+      <td align="left" style="padding-left:5px; line-height: 20px;">' . $safeWebsite . '</td>
+    </tr>
+    <tr style="height: 32px;">
+      <th align="right" style="width:150px; padding-right:5px;">Comment:</th>
+      <td align="left" style="padding-left:5px; line-height: 20px;">' . $safeComment . '</td>
+    </tr>
+  </table>
+</body>
+</html>
+';
+
+if (send_mail($to, $subject, $message, $mail, $name)) {
+    json_response('success', __SUCCESS_MESSAGE__);
+}
+
+json_response('error', __ERROR_MESSAGE__);
+?>
