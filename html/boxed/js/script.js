@@ -99,13 +99,16 @@ $(document).ready(function($) {
 	
 	var searchToggle = $('.open-search'),
 		inputAnime = $(".form-search"),
-		body = $('body');
+		body = $('body'),
+		searchInput = inputAnime.find('input[type="search"]'),
+		searchButton = inputAnime.find('button[type="submit"]');
 
 	searchToggle.on('click', function(event){
 		event.preventDefault();
 
 		if ( !inputAnime.hasClass('active') ) {
 			inputAnime.addClass('active');
+			searchInput.focus();
 		} else {
 			inputAnime.removeClass('active');			
 		}
@@ -118,6 +121,54 @@ $(document).ready(function($) {
 	var elemBinds = $('.open-search, .form-search');
 	elemBinds.bind('click', function(e) {
 		e.stopPropagation();
+	});
+
+	// Search functionality
+	function performSearch(searchTerm) {
+		if (!searchTerm.trim()) {
+			// Reset to show all projects
+			$('.project-post').show();
+			return;
+		}
+
+		var term = searchTerm.toLowerCase();
+		
+		// Hide all project posts by default
+		$('.project-post').each(function() {
+			var $post = $(this);
+			var $link = $post.find('a').first();
+			var href = $link.attr('href') ? $link.attr('href').toLowerCase() : '';
+			var linkText = $link.find('h2').text().toLowerCase();
+			
+			// Show if search term matches href or link text
+			if (href.indexOf(term) !== -1 || linkText.indexOf(term) !== -1) {
+				$post.show();
+			} else {
+				$post.hide();
+			}
+		});
+
+		// Trigger isotope refresh to update layout
+		try {
+			$container.isotope('reLayout');
+		} catch(err) {
+		}
+	}
+
+	// Search on input change
+	searchInput.on('keyup', function() {
+		performSearch($(this).val());
+	});
+
+	// Search on form submit
+	inputAnime.on('submit', function(e) {
+		e.preventDefault();
+		performSearch(searchInput.val());
+	});
+
+	searchButton.on('click', function(e) {
+		e.preventDefault();
+		performSearch(searchInput.val());
 	});
 
 	/* ---------------------------------------------------------------------- */
@@ -359,14 +410,7 @@ function downloadPDF(fileName) {
     // encode filename for URL safety (spaces, non-latin chars)
     var safeFile = encodeURIComponent(fileName) + '.pdf';
     var url = 'upload/projects/' + safeFile;
-    var link = document.createElement('a');
-    link.href = url;
-    link.download = fileName + '.pdf';
-    link.target = '_blank';
-    // append to DOM so click works in all browsers
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    window.open(url, '_blank');
 }
 
 function downloadMagnumPur790() {
@@ -514,4 +558,8 @@ function downloadKvant130() {
 
 function downloadGruntEmalMagnum150Zn() {
 	downloadPDF('Грунт-емаль MAGNUM 150Zn');
+}
+
+function downloadGrunt2KMagnumEP027PROHUMID() {
+	downloadPDF('Грунт 2К_MAGNUM_EP_027_PRO_HUMID');
 }

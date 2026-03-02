@@ -904,6 +904,7 @@ a.button-one {
 .clients-section .clients-title p {
   margin-bottom: 30px;
   max-width: 900px;
+  font-size: 20px;
 }
 .clients-section ul.client-list {
   margin: 0;
@@ -1157,6 +1158,17 @@ a.button-one {
 .projects-section2 .project-title p {
   max-width: 800px;
   margin: 0 auto;
+}
+.project-title h2.uniform-title,
+.clients-title h2.uniform-title {
+  color: #222222;
+  font-size: 17px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  margin: 0 0 15px;
+  text-transform: uppercase;
+  letter-spacing: 1.9px;
+  margin-bottom: 25px;
 }
 .projects-section2 .project-box .project-post .hover-box {
   background: #222222;

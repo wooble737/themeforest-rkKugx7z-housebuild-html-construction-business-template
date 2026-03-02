@@ -1,4 +1,5 @@
 <?php 
+	header('Content-Type: application/json; charset=utf-8');
 
 	/* ==========================  Define variables ========================== */
 
@@ -21,7 +22,7 @@
 
 	//Send mail function
 	function send_mail($to,$subject,$message,$headers){
-		if(@mail($to,$subject,$message,$headers)){
+		if(mail($to,$subject,$message,$headers)){
 			echo json_encode(array('info' => 'success', 'msg' => __SUCCESS_MESSAGE__));
 		} else {
 			echo json_encode(array('info' => 'error', 'msg' => __ERROR_MESSAGE__));
@@ -30,19 +31,15 @@
 
 	//Check e-mail validation
 	function check_email($email){
-		if(!@eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $email)){
-			return false;
-		} else {
-			return true;
-		}
+		return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 	}
 
 	//Get post data
 	if(isset($_POST['name']) and isset($_POST['mail']) and isset($_POST['comment'])){
-		$name 	 = $_POST['name'];
-		$mail 	 = $_POST['mail'];
-		$website  = $_POST['website'];
-		$comment = $_POST['comment'];
+		$name 	 = trim($_POST['name']);
+		$mail 	 = trim($_POST['mail']);
+		$website  = isset($_POST['website']) ? trim($_POST['website']) : '';
+		$comment = trim($_POST['comment']);
 
 		if($name == '') {
 			echo json_encode(array('info' => 'error', 'msg' => "Please enter your name."));
@@ -56,10 +53,13 @@
 		} else {
 			//Send Mail
 			$to = __TO__;
-			$subject = __SUBJECT__ . ' ' . $name;
+			$safeName = str_replace(array("\r", "\n"), '', $name);
+			$safeMail = str_replace(array("\r", "\n"), '', $mail);
+			$subject = __SUBJECT__ . ' ' . $safeName;
 			$message = '
 			<html>
 			<head>
+			  <meta charset="utf-8">
 			  <title>Mail from '. $name .'</title>
 			</head>
 			<body>
@@ -87,7 +87,7 @@
 
 			$headers  = 'MIME-Version: 1.0' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-			$headers .= 'From: ' . $mail . "\r\n";
+			$headers .= 'From: ' . $safeMail . "\r\n";
 
 			send_mail($to,$subject,$message,$headers);
 		}
