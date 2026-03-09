@@ -29,14 +29,24 @@ function check_email($email)
     return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 }
 
+function sanitize_header_value($value)
+{
+    return trim(str_replace(array("\r", "\n"), '', (string)$value));
+}
+
 function get_smtp_config()
 {
+    $encryption = strtolower((string)(getenv('SMTP_ENCRYPTION') ?: 'tls'));
+    if ($encryption !== 'ssl' && $encryption !== 'tls') {
+        $encryption = 'tls';
+    }
+
     return array(
         'host' => getenv('SMTP_HOST') ?: '',
         'port' => (int)(getenv('SMTP_PORT') ?: 587),
         'username' => getenv('SMTP_USERNAME') ?: '',
         'password' => getenv('SMTP_PASSWORD') ?: '',
-        'encryption' => getenv('SMTP_ENCRYPTION') ?: 'tls',
+        'encryption' => $encryption,
         'from_email' => getenv('SMTP_FROM_EMAIL') ?: (getenv('SMTP_USERNAME') ?: __TO__),
         'from_name' => getenv('SMTP_FROM_NAME') ?: 'Website Contact Form'
     );
@@ -44,11 +54,13 @@ function get_smtp_config()
 
 function send_mail($to, $subject, $message, $replyEmail, $replyName)
 {
-    $safeReplyName = str_replace(array("\r", "\n"), '', $replyName);
-    $safeReplyEmail = str_replace(array("\r", "\n"), '', $replyEmail);
+    $safeReplyName = sanitize_header_value($replyName);
+    $safeReplyEmail = sanitize_header_value($replyEmail);
 
     $smtp = get_smtp_config();
     $usePhpMailer = class_exists('PHPMailer\\PHPMailer\\PHPMailer') && $smtp['host'] !== '';
+    $fromEmail = check_email($smtp['from_email']) ? sanitize_header_value($smtp['from_email']) : __TO__;
+    $fromName = sanitize_header_value($smtp['from_name']);
 
     if ($usePhpMailer) {
         try {
@@ -67,7 +79,7 @@ function send_mail($to, $subject, $message, $replyEmail, $replyName)
             }
 
             $mail->CharSet = 'UTF-8';
-            $mail->setFrom($smtp['from_email'], $smtp['from_name']);
+            $mail->setFrom($fromEmail, $fromName);
             $mail->addAddress($to);
             $mail->addReplyTo($safeReplyEmail, $safeReplyName);
             $mail->isHTML(true);
@@ -76,14 +88,14 @@ function send_mail($to, $subject, $message, $replyEmail, $replyName)
 
             $mail->send();
             return true;
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }
 
     $headers = 'MIME-Version: 1.0' . "\r\n";
     $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-    $headers .= 'From: ' . $safeReplyEmail . "\r\n";
+    $headers .= 'From: ' . $fromEmail . "\r\n";
     $headers .= 'Reply-To: ' . $safeReplyEmail . "\r\n";
 
     return @mail($to, $subject, $message, $headers);
@@ -93,10 +105,10 @@ if (!isset($_POST['name']) || !isset($_POST['mail']) || !isset($_POST['comment']
     json_response('error', __MESSAGE_EMPTY_FILDS__);
 }
 
-$name = trim($_POST['name']);
-$mail = trim($_POST['mail']);
-$website = isset($_POST['website']) ? trim($_POST['website']) : '';
-$comment = trim($_POST['comment']);
+$name = trim((string)$_POST['name']);
+$mail = trim((string)$_POST['mail']);
+$website = isset($_POST['website']) ? trim((string)$_POST['website']) : '';
+$comment = trim((string)$_POST['comment']);
 
 if ($name === '') {
     json_response('error', 'Please enter your name.');
